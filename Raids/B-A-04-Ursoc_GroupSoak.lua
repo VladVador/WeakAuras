@@ -18,47 +18,47 @@ function()
     local mark = nil;
     local playerLower;
     local playerSquareName = "";
-    local playerCircleName = "";
+    local playerTriangleName = "";
     local randomBobbyNameWithDebuff = "";
     
     for i=1, GetNumGroupMembers() do
         local name = GetRaidRosterInfo(i);
-        if (GetRaidTargetIndex(name) == 2) then
-            playerCircleName = name;
+        if (GetRaidTargetIndex(name) == 4) then
+            playerTriangleName = name;
         elseif (GetRaidTargetIndex(name) == 6) then
             playerSquareName = name;
         elseif (UnitDebuff(name, GetSpellInfo(198108))) then
             randomBobbyNameWithDebuff = name;
         end
     end
-	if (playerSquareName == "" or playerCircleName == "") then
+    if (playerSquareName == "" or playerTriangleName == "") then
         return [[Interface\TARGETINGFRAME\UI-RaidTargetingIcon_]].. 9 ..[[.blp]]
     end
     local expirationSquareDebuff = select(7, UnitDebuff(playerSquareName, GetSpellInfo(198108))) - GetTime();
-    local expirationCircleDebuff = select(7, UnitDebuff(playerCircleName, GetSpellInfo(198108))) - GetTime();
-    if (expirationCircleDebuff > 0 or expirationSquareDebuff > 0) then
-        if (expirationSquareDebuff < expirationCircleDebuff) then
+    local expirationTriangleDebuff = select(7, UnitDebuff(playerTriangleName, GetSpellInfo(198108))) - GetTime();
+    if (expirationTriangleDebuff > 0 or expirationSquareDebuff > 0) then
+        if (expirationSquareDebuff < expirationTriangleDebuff) then
+            return [[Interface\TARGETINGFRAME\UI-RaidTargetingIcon_]].. 4 ..[[.blp]]
+        elseif (expirationSquareDebuff > expirationTriangleDebuff) then
             return [[Interface\TARGETINGFRAME\UI-RaidTargetingIcon_]].. 2 ..[[.blp]]
-        elseif (expirationSquareDebuff > expirationCircleDebuff) then
-            return [[Interface\TARGETINGFRAME\UI-RaidTargetingIcon_]].. 6 ..[[.blp]]
         end
     end
     if (randomBobbyNameWithDebuff == "") then
-        return [[Interface\TARGETINGFRAME\UI-RaidTargetingIcon_]].. 6 ..[[.blp]]
+        return [[Interface\TARGETINGFRAME\UI-RaidTargetingIcon_]].. 2 ..[[.blp]]
     end
     local bobbyX,bobbyY = UnitPosition(randomBobbyNameWithDebuff);
     local squareX, squareY = UnitPosition(playerSquareName);
-    local circleX, circleY = UnitPosition(playerCircleName);
+    local circleX, circleY = UnitPosition(playerTriangleName);
     local distSquared = 0;
     distSquared = (bobbyX - squareX) ^ 2 + (bobbyY - squareY) ^ 2;
     local distanceBobbyToSquare = math.floor(distSquared^0.5);
     distSquared = (bobbyX - circleX) ^ 2 + (bobbyY - circleY) ^ 2;
-    local distanceBobbyToCircle = math.floor(distSquared^0.5);
+    local distanceBobbyToTriangle = math.floor(distSquared^0.5);
     
-    if (distanceBobbyToSquare < distanceBobbyToCircle) then
+    if (distanceBobbyToSquare < distanceBobbyToTriangle) then
         return [[Interface\TARGETINGFRAME\UI-RaidTargetingIcon_]].. 2 ..[[.blp]]
     else
-        return [[Interface\TARGETINGFRAME\UI-RaidTargetingIcon_]].. 6 ..[[.blp]]
+        return [[Interface\TARGETINGFRAME\UI-RaidTargetingIcon_]].. 4 ..[[.blp]]
     end
 end
 
